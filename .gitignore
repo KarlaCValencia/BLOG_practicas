@@ -1,0 +1,19 @@
+# ENV FILES (CRÍTICO)
+.env
+*/.env
+
+# NODE MODULES
+node_modules
+*/node_modules
+
+# BUILD
+dist
+build
+
+# LOGS
+*.log
+
+# OS / EDITOR
+.DS_Store
+.vscode
+.idea
