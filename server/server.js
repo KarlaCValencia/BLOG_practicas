@@ -15,9 +15,10 @@ const cn = {
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
-  password: process.env.DB_PASS,
+  password: process.env.DB_PASSWORD,
+  ssl: { rejectUnauthorized: false },
   allowExitOnIdle: true
-}
+};
 
 const db = pgp(cn);
 
@@ -31,7 +32,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /* MIDDLEWARES */
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 app.use(express.json());
 
 /* SESSION */
@@ -63,10 +67,13 @@ app.get('/hello', (req, res) => {
 app.get('/posts', (req, res) => {
   db.any('SELECT * FROM post')
     .then(data => res.json(data))
-    .catch(error => console.log('ERROR:', error));
+    .catch(error => {
+      console.log('ERROR:', error);
+      res.status(500).send(error.message);
+    });
 });
 
-/* GET ONE POST (CON AUTOR) */
+/* GET ONE POST */
 app.get('/posts/:id_post', (req, res) => {
   db.one(`
     SELECT post.*, author.name, author.last_name
@@ -75,10 +82,13 @@ app.get('/posts/:id_post', (req, res) => {
     WHERE post.id_post=$1
   `, [req.params.id_post])
     .then(data => res.json(data))
-    .catch(error => console.log('ERROR:', error));
+    .catch(error => {
+      console.log('ERROR:', error);
+      res.status(500).send(error.message);
+    });
 });
 
-/* GET AUTHOR (PROTEGIDO) */
+/* GET AUTHOR */
 app.get('/authors/:id_author', authenticateSession, (req, res) => {
   db.one(
     `SELECT *, TO_CHAR(date_of_birth, 'DD/MM/YYYY') as date_of_birth 
@@ -87,27 +97,24 @@ app.get('/authors/:id_author', authenticateSession, (req, res) => {
     [req.params.id_author]
   )
     .then(data => res.json(data))
-    .catch(error => console.log('ERROR:', error));
+    .catch(error => {
+      console.log('ERROR:', error);
+      res.status(500).send(error.message);
+    });
 });
 
 /* CREATE POST */
 app.post('/posts/new', upload.single('img'), (req, res) => {
-  console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
-
   db.none(
     "INSERT INTO post (title, image, text, id_author) VALUES($1, $2, $3, $4)",
     [
       req.body.title,
-      req.file.originalname,
+      req.file?.originalname || null,
       req.body.text,
       req.body.id_author
     ]
   )
-  .then(() => {
-    console.log("INSERT OK");
-    res.json({ message: 'Post agregado correctamente' });
-  })
+  .then(() => res.json({ message: 'Post agregado correctamente' }))
   .catch((error) => {
     console.log("ERROR REAL:", error);
     res.status(500).json({ error: error.message });
@@ -127,9 +134,7 @@ app.post('/login', upload.none(), (req, res) => {
         req.session.save((err) => {
           if (err) return res.status(500).send(err);
 
-          res.json({
-            id_author: data.id_author
-          });
+          res.json({ id_author: data.id_author });
         });
 
       } else {
@@ -150,12 +155,14 @@ app.get('/logout', (req, res) => {
   });
 });
 
-/* SESSION INFO (FIX REAL) */
+/* SESSION INFO */
 app.get('/session-info', (req, res) => {
   res.json(req.session);
 });
 
 /* SERVER */
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:8000`);
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
