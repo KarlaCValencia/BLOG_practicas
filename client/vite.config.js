@@ -7,3 +7,7 @@ export default defineConfig({
     historyApiFallback: true
   }
 })
+
+export default {
+  base: '/'
+}
