@@ -7,9 +7,12 @@ export default function Author(){
 
   useEffect(() => {
     fetch(import.meta.env.VITE_API_URL + '/authors/' + id_author)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => setAuthor(data))
-      .catch(error => console.log(error));
+      .catch(error => console.log('AUTHOR ERROR:', error));
   }, [id_author]);
 
   if (!author) return <h1>Cargando...</h1>;
