@@ -89,7 +89,7 @@ app.get('/posts/:id_post', (req, res) => {
 });
 
 /* GET AUTHOR */
-app.get('/authors/:id_author', authenticateSession, (req, res) => {
+app.get('/authors/:id_author', (req, res) => {
   db.one(
     `SELECT *, TO_CHAR(date_of_birth, 'DD/MM/YYYY') as date_of_birth 
      FROM author 
