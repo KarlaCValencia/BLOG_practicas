@@ -24,7 +24,7 @@ function App() {
         <Route path="/blog/*" element={<Blog />} />
         <Route path="/contacto" element={<Contact />} />
         <Route path="/blog/:id_post" element={<Post></Post>}></Route>
-        <Route path="/author/:id_author" element={<Author></Author>}></Route>
+        <Route path="/authors/:id_author" element={<Author></Author>}></Route>
         <Route path="/new" element={<NewPost />} />
         <Route path="/login" element={<Login />} />
       </Routes>
