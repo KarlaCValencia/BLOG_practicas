@@ -19,8 +19,8 @@ export default function Post(){
 
     <h2>
       Escrito por:  
-      <Link to={"/author/" + post?.id_author}>
-        {post?.name} {post?.last_name}
+      <Link to={`/authors/${post.id_author}`}>
+        {post.name} {post.last_name}
       </Link>
     </h2>
 
