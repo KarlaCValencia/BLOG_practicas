@@ -90,15 +90,20 @@ app.get('/posts/:id_post', (req, res) => {
 
 /* GET AUTHOR */
 app.get('/authors/:id_author', (req, res) => {
+  console.log('HIT /authors:', req.params.id_author);
+
   db.one(
     `SELECT *, TO_CHAR(date_of_birth, 'DD/MM/YYYY') as date_of_birth 
      FROM author 
      WHERE id_author = $1`,
     [req.params.id_author]
   )
-    .then(data => res.json(data))
+    .then(data => {
+      console.log('AUTHOR FOUND');
+      res.json(data);
+    })
     .catch(error => {
-      console.log('ERROR:', error);
+      console.log('AUTHOR ERROR:', error);
       res.status(500).send(error.message);
     });
 });
