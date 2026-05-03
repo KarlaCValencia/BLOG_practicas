@@ -7,16 +7,8 @@ export default function Author(){
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL + '/authors/' + id_author, {
-      method: 'GET',
-      credentials: 'include'
-    })
-      .then(res => {
-        if (res.status === 401) {
-          navigate('/login');
-        }
-        return res.json();
-      })
+    fetch(import.meta.env.VITE_API_URL + '/authors/' + id_author)
+      .then(res => res.json())
       .then(data => setAuthor(data))
       .catch(error => console.log(error));
   }, [id_author]);
