@@ -27,7 +27,7 @@ export default function Login() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        navigate('/author/' + data.id_author);
+        navigate('/authors/' + data.id_author);
       })
       .catch((error) => {
         console.log(error);
