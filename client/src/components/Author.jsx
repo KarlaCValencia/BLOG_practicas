@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function Author(){
   const { id_author } = useParams();
-  const [author, setAuthor] = useState({});
-  const navigate = useNavigate();
+  const [author, setAuthor] = useState(null);
 
   useEffect(() => {
     fetch(import.meta.env.VITE_API_URL + '/authors/' + id_author)
@@ -13,12 +12,14 @@ export default function Author(){
       .catch(error => console.log(error));
   }, [id_author]);
 
+  if (!author) return <h1>Cargando...</h1>;
+
   return (
-  <div className="post-container">
-    <h1>{author?.name} {author?.last_name}</h1>
-    <h2>{author?.date_of_birth}</h2>
-    <h2>{author?.phone_number}</h2>
-    <h2>{author?.email}</h2>
-  </div>
+    <div className="post-container">
+      <h1>{author.name} {author.last_name}</h1>
+      <h2>{author.date_of_birth}</h2>
+      <h2>{author.phone_number}</h2>
+      <h2>{author.email}</h2>
+    </div>
   );
 }
